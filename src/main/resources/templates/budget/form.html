@@ -6,7 +6,13 @@
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 <link rel="stylesheet" th:href="@{/css/bootstrap-wysihtml5.css}"/>
 <!-- Editable CSS -->
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
+<link th:href="@{/css/bootstrap-material-datetimepicker.css}" rel="stylesheet">
+
+<link th:href="@{/css/bootstrap-datepicker.min.css}" rel="stylesheet" type="text/css"/>
+
+<link th:href="@{/css/jquery-clockpicker.min.css}" rel="stylesheet">
+
 <!-- Custom CSS -->
 <link th:href="@{/css/style.min.css}" rel="stylesheet">
 <!-- page css -->
@@ -70,94 +76,29 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Create New Lead</h4>
-                            <form th:object="${lead}" th:action="@{/employee/lead/create}" enctype="multipart/form-data" id="email-form" method="post">
-                                <input type="hidden" id="allFiles" name="allFiles">
-                                <label class="m-t-20" for="name">Name:</label>
+                            <h4 class="card-title">Create New budget</h4>
+                            <form th:object="${budget}" th:action="@{/budgets/save}"
+                                  enctype="multipart/form-data" id="email-form" method="post" >
+                                <label class="m-t-20" for="subject">Somme:</label>
                                 <div class="input-group">
-                                    <input type="text" id="name" th:field="*{name}" class="form-control">
-                                </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                                </div>
-
-                                <label class="m-t-20" for="phone">Phone:</label>
-                                <div class="input-group">
-                                    <input type="text" id="phone" th:field="*{phone}" class="form-control">
-                                </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" autocomplete="off"></span>
-                                </div>
-
-                                <label class="m-t-20" for="status">status:</label>
-                                <div class="input-group">
-                                    <select id="status" th:field="*{status}" class="form-control">
-                                        <option value="meeting-to-schedule">Meeting to be scheduled</option>
-                                        <option value="assign-to-sales">Assign to sales representative</option>
-                                        <option value="archived">Archived</option>
-                                        <option value="success">success</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
+                                    <input type="text" id="subject" th:field="*{valeur}" class="form-control">
                                 </div>
 
 
-                                <label class="m-t-20" for="employeeId">Assign Employee:</label>
+
+                                <label class="m-t-20" for="subject">Date de creation :</label>
                                 <div class="input-group">
-                                    <select name="employeeId" id="employeeId" class="form-control">
-                                        <option th:each="employee : ${employees}" th:text="${employee.username}" th:value="${employee.id}"></option>
-                                    </select>
+                                    <input type="datetime-local" id="dateCreation" th:field="*{date}" class="form-control">
+                                </div>
+                                <div class="input-group">
+                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('date')}"
+                                          th:errors="*{date}"></span>
                                 </div>
 
-                                <label class="m-t-20" for="customerId">Customer:</label>
-                                <div class="input-group">
-                                    <select name="customerId" id="customerId" class="form-control">
-                                        <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
-                                    </select>
-                                </div>
-                                <label class="m-t-20" for="depense">Depense:</label>
-                                <div class="input-group">
-                                    <input type="text" id="depense" name="depense" class="form-control">
-                                </div>
-                                <label class="m-t-20"><i class="ti-link"></i> Attachment</label>
-                                <div class="form-group">
-                                    <div class="dropzone" id="my-dropzone"></div>
-                                </div>
-                                <div th:if="${hasGoogleDriveAccess}" class="col-md-5 m-b-15 custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input trigger-emails" th:id="googleDrive" th:field="*{googleDrive}">
-                                    <label th:for="googleDrive" class="custom-control-label">Upload Docs to your Google Drive</label>
-                                </div>
-                                <button type="submit" class="btn btn-primary m-t-20">Create Lead</button>
+
+
+                                <button type="submit" class="btn btn-primary m-t-20">Create Budget</button>
                             </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${hasGoogleDriveAccess}" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Create New Google Drive Folder</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post">
-                                <input type="hidden" id="id" name="id" class="form-control">
-                                <label for="folderName" class="m-t-20">Folder Name</label>
-                                <div class="input-group">
-                                    <input id="folderName" class="form-control">
-                                </div>
-                                <div class="input-group m-t-10">
-                                    <span id="emailErrors" class="text-danger font-weight-bold"></span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="create" >Create</button>
                         </div>
                     </div>
                 </div>
@@ -199,21 +140,23 @@
 <script th:inline="javascript">
     var home = /*[[${home}]]*/ null;
 </script>
-<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript">></script>
 <!--    &lt;!&ndash; Bootstrap tether Core JavaScript &ndash;&gt;-->
-<script th:src="@{/js/library/popper.min.js}" type="text/javascript"></script>
-<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/popper.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript">></script>
 <!--    &lt;!&ndash; slimscrollbar scrollbar JavaScript &ndash;&gt;-->
-<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript">></script>
 <!--Wave Effects -->
-<script th:src="@{/js/library/waves.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/waves.js}" type="text/javascript">></script>
 <!--Menu sidebar -->
-<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript">></script>
 <!--stickey kit -->
 <script th:src="@{/js/library/sticky-kit.min.js}"></script>
-<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript">></script>
 <!--Custom JavaScript -->
-<script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/moment.js}"></script>
+<script th:src="@{/js/library/jquery-clockpicker.min.js}"></script>
+<script th:src="@{/js/library/custom.min.js}" type="text/javascript">></script>
 <!-- Editable -->
 
 <script th:src="@{/js/library/wysihtml5-0.3.0.js}"></script>
@@ -233,6 +176,16 @@
     var driveFolderId = "";
 
     /*]]>*/
+</script>
+<script th:src="@{/js/library/bootstrap-material-datetimepicker.js}"></script>
+<script th:src="@{/js/library/bootstrap-datepicker.min.js}"></script>
+<script>
+    // MAterial Date picker
+    $('#startDate, #endDate').bootstrapMaterialDatePicker({ weekStart: 0, time: false });
+    $('#timepicker').bootstrapMaterialDatePicker({ format: 'HH:mm', time: true, date: false });
+    $('#date-format').bootstrapMaterialDatePicker({ format: 'dddd DD MMMM YYYY - HH:mm' });
+
+    $('#min-date').bootstrapMaterialDatePicker({ format: 'DD/MM/YYYY HH:mm', minDate: new Date() });
 </script>
 <script th:src="@{/js/general-dropzone.js}" type="text/javascript"
         th:data-csrf-token="${_csrf.token}" th:data-csrf-header="${_csrf.headerName}"></script>

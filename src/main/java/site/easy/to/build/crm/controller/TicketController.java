@@ -15,7 +15,10 @@ import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.budget.BudgetService;
 import site.easy.to.build.crm.service.customer.CustomerService;
+import site.easy.to.build.crm.service.depense.DepenseService;
+import site.easy.to.build.crm.service.notification.NotificationService;
 import site.easy.to.build.crm.service.settings.TicketEmailSettingsService;
 import site.easy.to.build.crm.service.ticket.TicketService;
 import site.easy.to.build.crm.service.user.UserService;
@@ -41,11 +44,13 @@ public class TicketController {
     private final TicketEmailSettingsService ticketEmailSettingsService;
     private final GoogleGmailApiService googleGmailApiService;
     private final EntityManager entityManager;
-
+    private final BudgetService budgetService;
+    private final DepenseService depenseService;
+    private final NotificationService notificationService;
 
     @Autowired
     public TicketController(TicketService ticketService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
-                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager) {
+                            TicketEmailSettingsService ticketEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager,BudgetService budgetService,DepenseService depenseService,NotificationService notificationService) {
         this.ticketService = ticketService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
@@ -53,6 +58,9 @@ public class TicketController {
         this.ticketEmailSettingsService = ticketEmailSettingsService;
         this.googleGmailApiService = googleGmailApiService;
         this.entityManager = entityManager;
+        this.budgetService=budgetService;
+        this.depenseService=depenseService;
+        this.notificationService=notificationService;
     }
 
     @GetMapping("/show-ticket/{id}")
@@ -125,7 +133,7 @@ public class TicketController {
     @PostMapping("/create-ticket")
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
-                               @RequestParam("employeeId") int employeeId, Authentication authentication) {
+                               @RequestParam("employeeId") int employeeId, @RequestParam("depense") double depense,Authentication authentication) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -168,9 +176,37 @@ public class TicketController {
         ticket.setManager(manager);
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
-
+        Notification notif= budgetService.checkBudget(customerId,depense); 
+        Depense depenseToInsert= new Depense();
+        depenseToInsert.setDateDepense(notif.getDateNotification());
+        depenseToInsert.setEtat(notif.getEtat());
+        depenseToInsert.setTicket(ticket);
+        depenseToInsert.setValeurDepense(depense);    
         ticketService.save(ticket);
+        depenseService.saveDepense(depenseToInsert);
+        // if (depenseToInsert.getEtat()==0) {
+        //     List<User> employees = new ArrayList<>();
+        //     List<Customer> customers;
 
+        //     if(AuthorizationUtil.hasRole(authentication, "ROLE_MANAGER")) {
+        //         employees = userService.findAll();
+        //         customers = customerService.findAll();
+        //     } else {
+        //         employees.add(manager);
+        //         customers = customerService.findByUserId(manager.getId());
+        //     }
+
+        //     model.addAttribute("employees",employees);
+        //     model.addAttribute("customers",customers);
+        //     model.addAttribute("notification", notif);
+        //     model.addAttribute("ticket", ticket);
+        //     return "ticket/create-ticket";
+            
+        // }
+        notif.setEtat(0);
+        if (!notif.getMessage().equals("successful")){
+            notificationService.save(notif);    
+        }
         return "redirect:/employee/ticket/assigned-tickets";
     }
 
@@ -289,7 +325,7 @@ public class TicketController {
         List<String> properties = DatabaseUtil.getColumnNames(entityManager, Ticket.class);
         Map<String, Pair<String,String>> changes = LogEntityChanges.trackChanges(originalTicket,currentTicket,properties);
         boolean isGoogleUser = !(authentication instanceof UsernamePasswordAuthenticationToken);
-
+          
         if(isGoogleUser && googleGmailApiService != null) {
             OAuthUser oAuthUser = authenticationUtils.getOAuthUserFromAuthentication(authentication);
             if(oAuthUser.getGrantedScopes().contains(GoogleAccessService.SCOPE_GMAIL)) {

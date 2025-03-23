@@ -66,104 +66,56 @@
             <!-- ============================================================== -->
             <!-- Start Page Content -->
             <!-- ============================================================== -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Create New Lead</h4>
-                            <form th:object="${lead}" th:action="@{/employee/lead/create}" enctype="multipart/form-data" id="email-form" method="post">
-                                <input type="hidden" id="allFiles" name="allFiles">
-                                <label class="m-t-20" for="name">Name:</label>
-                                <div class="input-group">
-                                    <input type="text" id="name" th:field="*{name}" class="form-control">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Importation des Tickets de Dépenses</h4>
+    
+                                <!-- Message de succès ou d'erreur -->
+                                <div th:if="${message != null}" class="alert alert-info">
+                                    <span th:text="${message}"></span>
                                 </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                                </div>
-
-                                <label class="m-t-20" for="phone">Phone:</label>
-                                <div class="input-group">
-                                    <input type="text" id="phone" th:field="*{phone}" class="form-control">
-                                </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" autocomplete="off"></span>
-                                </div>
-
-                                <label class="m-t-20" for="status">status:</label>
-                                <div class="input-group">
-                                    <select id="status" th:field="*{status}" class="form-control">
-                                        <option value="meeting-to-schedule">Meeting to be scheduled</option>
-                                        <option value="assign-to-sales">Assign to sales representative</option>
-                                        <option value="archived">Archived</option>
-                                        <option value="success">success</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
-                                </div>
-
-
-                                <label class="m-t-20" for="employeeId">Assign Employee:</label>
-                                <div class="input-group">
-                                    <select name="employeeId" id="employeeId" class="form-control">
-                                        <option th:each="employee : ${employees}" th:text="${employee.username}" th:value="${employee.id}"></option>
-                                    </select>
-                                </div>
-
-                                <label class="m-t-20" for="customerId">Customer:</label>
-                                <div class="input-group">
-                                    <select name="customerId" id="customerId" class="form-control">
-                                        <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
-                                    </select>
-                                </div>
-                                <label class="m-t-20" for="depense">Depense:</label>
-                                <div class="input-group">
-                                    <input type="text" id="depense" name="depense" class="form-control">
-                                </div>
-                                <label class="m-t-20"><i class="ti-link"></i> Attachment</label>
-                                <div class="form-group">
-                                    <div class="dropzone" id="my-dropzone"></div>
-                                </div>
-                                <div th:if="${hasGoogleDriveAccess}" class="col-md-5 m-b-15 custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input trigger-emails" th:id="googleDrive" th:field="*{googleDrive}">
-                                    <label th:for="googleDrive" class="custom-control-label">Upload Docs to your Google Drive</label>
-                                </div>
-                                <button type="submit" class="btn btn-primary m-t-20">Create Lead</button>
-                            </form>
+    
+                                <!-- Formulaire d'importation -->
+                                <form th:action="@{/import/importTicketDepense}" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="file">Sélectionner un fichier CSV :</label>
+                                        <input type="file" id="file" name="file" class="form-control" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Importer</button>
+                                </form>
+    
+                                <hr>
+    
+                                <h5 th:if="${errorMessage != null}" th:text="${errorMessage}"></h5>
+                                
+                                <!-- Affichage des tickets importés -->
+                                <h5 th:if="${ticketDepense != null and !ticketDepense.isEmpty()}">Résultats de l'import :</h5>
+                                <table th:if="${ticketDepense != null and !ticketDepense.isEmpty()}" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Description</th>
+                                            <th>Montant</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="ticketdep : ${ticketDepense}">
+                                            <td th:text="${ticketdep.ticket.subject}"></td>
+                                            <td th:text="${ticketdep.ticket.description}"></td>
+                                            <td th:text="${ticketdep.depense.valeurDepense}"></td>
+                                            <td th:text="${ticketdep.ticket.createdAt}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+    
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div th:if="${hasGoogleDriveAccess}" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Create New Google Drive Folder</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post">
-                                <input type="hidden" id="id" name="id" class="form-control">
-                                <label for="folderName" class="m-t-20">Folder Name</label>
-                                <div class="input-group">
-                                    <input id="folderName" class="form-control">
-                                </div>
-                                <div class="input-group m-t-10">
-                                    <span id="emailErrors" class="text-danger font-weight-bold"></span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="create" >Create</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ============================================================== -->
+                <!-- ============================================================== -->
             <!-- End Page Content -->
             <!-- ============================================================== -->
             <!-- ============================================================== -->
