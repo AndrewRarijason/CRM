@@ -25,11 +25,15 @@ import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.calendar.GoogleCalendarApiService;
 import site.easy.to.build.crm.google.service.drive.GoogleDriveApiService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.budget.BudgetService;
 import site.easy.to.build.crm.service.customer.CustomerService;
+import site.easy.to.build.crm.service.depense.DepenseService;
+import site.easy.to.build.crm.service.depense.DepenseServiceImpl;
 import site.easy.to.build.crm.service.drive.GoogleDriveFileService;
 import site.easy.to.build.crm.service.file.FileService;
 import site.easy.to.build.crm.service.lead.LeadActionService;
 import site.easy.to.build.crm.service.lead.LeadService;
+import site.easy.to.build.crm.service.notification.NotificationService;
 import site.easy.to.build.crm.service.settings.LeadEmailSettingsService;
 import site.easy.to.build.crm.service.user.UserService;
 import site.easy.to.build.crm.util.*;
@@ -48,6 +52,11 @@ import java.util.regex.Pattern;
 public class LeadController {
 
     private final LeadService leadService;
+    private final BudgetService budgetService;
+    private final NotificationService notifService;
+    private final DepenseService depService;
+
+
     private final AuthenticationUtils authenticationUtils;
     private final UserService userService;
     private final CustomerService customerService;
@@ -62,11 +71,14 @@ public class LeadController {
     private final EntityManager entityManager;
 
     @Autowired
-    public LeadController(LeadService leadService, AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
+    public LeadController(LeadService leadService, BudgetService depenseService,NotificationService notifService,DepenseService depService,AuthenticationUtils authenticationUtils, UserService userService, CustomerService customerService,
                           LeadActionService leadActionService, GoogleCalendarApiService googleCalendarApiService, FileService fileService,
                           GoogleDriveApiService googleDriveApiService, GoogleDriveFileService googleDriveFileService, FileUtil fileUtil,
                           LeadEmailSettingsService leadEmailSettingsService, GoogleGmailApiService googleGmailApiService, EntityManager entityManager) {
         this.leadService = leadService;
+        this.budgetService = depenseService;
+        this.notifService = notifService;
+        this.depService = depService;
         this.authenticationUtils = authenticationUtils;
         this.userService = userService;
         this.customerService = customerService;
@@ -168,7 +180,7 @@ public class LeadController {
     public String createLead(@ModelAttribute("lead") @Validated Lead lead, BindingResult bindingResult,
                              @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId,
                              Authentication authentication, @RequestParam("allFiles")@Nullable String files,
-                             @RequestParam("folderId") @Nullable String folderId, Model model) throws JsonProcessingException {
+                             @RequestParam("folderId") @Nullable String folderId,@RequestParam("depense") double depense ,Model model) throws JsonProcessingException {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -209,6 +221,21 @@ public class LeadController {
         }
 
         Lead createdLead = leadService.save(lead);
+      Notification notif= budgetService.checkBudget(customerId,depense); 
+      Depense depenseToInsert= new Depense();
+      depenseToInsert.setDateDepense(notif.getDateNotification());
+      depenseToInsert.setEtat(notif.getEtat());
+      depenseToInsert.setLead(lead);
+      depenseToInsert.setValeurDepense(depense);    
+      leadService.save(createdLead);
+      depService.saveDepense(depenseToInsert);
+
+      System.out.println("notif.getMessage()"+notif.getMessage());
+      if (!notif.getMessage().equals("successful")) {
+          notifService.save(notif);
+        
+      }
+        
         fileUtil.saveFiles(allFiles, createdLead);
 
         if (lead.getGoogleDrive() != null) {

@@ -10,11 +10,13 @@
       th:href="@{/css/dataTables.bootstrap4.css}">
 <link rel="stylesheet" type="text/css"
       th:href="@{/css/responsive.dataTables.min.css}">
-
+<link th:href="@{/css/login-register-lock.css}" rel="stylesheet">
+<link th:href="@{/css/jquery.toast.css}" rel="stylesheet">
 <!-- Custom CSS -->
 <link th:href="@{/css/style.min.css}" rel="stylesheet">
 <!-- page css -->
 <link th:href="@{/css/pages/inbox.css}" rel="stylesheet">
+<link th:href="@{/css/pages/file-upload.css}" rel="stylesheet">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -74,40 +76,27 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Contracts</h4>
-                            <div class="table-responsive m-t-40">
-                                <table id="config-table" class="table display table-bordered table-striped no-wrap">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Subject</th>
-                                        <th>Status</th>
-                                        <th>Employee email</th>
-                                        <th>Employee name</th>
-                                        <th>Start date</th>
-                                        <th>End date</th>
-                                        <th>Show</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:if="${contracts != null}" th:each="contract : ${contracts}">
-                                        <td th:text="${contract.contractId}"></td>
-                                        <td th:text="${contract.subject}"></td>
-                                        <td th:text="${contract.status}"></td>
-                                        <td th:text="${contract.user.email}"></td>
-                                        <td th:text="${contract.user.username}"></td>
-                                        <td th:text="${contract.startDate}"></td>
-                                        <td th:text="${contract.endDate}"></td>
-                                        <td>
-                                            <a th:href="@{${home} + 'customer/contract/' + ${contract.contractId}}">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>                                        
-                                        <!-- <td><a th:href="${home + 'customer/contract/' + ${contract.contractId}"><i class="fas fa-eye"></i></a></td> -->
-                                    </tr>
-                                    </tbody>
-                                </table>
+                            <div th:if="${message != null}" class="alert">
+                                <span th:text="${message}"></span>
                             </div>
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title">RESETTING THE DATABASE IS IRREVERSIBLE</h4>
+                                                <a th:href="${home + 'resetDatabase'}">
+                                                    <button type="submit" class="btn btn-success">
+                                                        RESET DATABASE
+                                                    </button>
+                                                </a>
+                                                </form>
+                                            <!-- Sections pour d'autres entités à ajouter ultérieurement -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
                         </div>
                     </div>
                 </div>
@@ -149,10 +138,10 @@
     var home = /*[[${home}]]*/ null;
 </script>
 <script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
-<!--    &lt;!&ndash; Bootstrap tether Core JavaScript &ndash;&gt;-->
+<!-- Bootstrap tether Core JavaScript -->
 <script th:src="@{/js/library/popper.min.js}" type="text/javascript"></script>
 <script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript"></script>
-<!--    &lt;!&ndash; slimscrollbar scrollbar JavaScript &ndash;&gt;-->
+<!-- slimscrollbar scrollbar JavaScript -->
 <script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript"></script>
 <!--Wave Effects -->
 <script th:src="@{/js/library/waves.js}" type="text/javascript"></script>
@@ -163,13 +152,9 @@
 <script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript"></script>
 <!--Custom JavaScript -->
 <script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
-<!-- Editable -->
-<script th:src="@{/js/library/jquery.dataTables.min.js}"></script>
-<script th:src="@{/js/library/dataTables.responsive.min.js}"></script>
-<script>
-    $('#config-table').DataTable({
-        responsive: true
-    });
-</script>
+<script th:src="@{/js/library/jquery.toast.js}"></script>
+<script th:src="@{/js/library/toastr.js}"></script>
+
+
 </body>
 </html>
