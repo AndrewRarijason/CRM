@@ -12,5 +12,5 @@ public interface DepenseService {
     Depense saveDepense(Depense depense);
     void deleteDepense(Integer id);
     double getTotalDepenseByCustomerId(int customerId);
-  
+
 }
