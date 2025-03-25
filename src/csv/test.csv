@@ -1,0 +1,4 @@
+ID,subject,description,status,priority,manager,employee,customer,created_at,depense
+1,Problème serveur,Le serveur ne répond pas,open,high,52,52,43,2024-03-20T10:15:30,1500.50
+2,Erreur facturation,Facturation incorrecte pour client X,closed,high,52,52,43,2024-03-18T08:30:00,750.00
+3,Problème réseau,Connexion lente signalée par plusieurs utilisateurs,open,high,52,52,43,2024-03-25T15:45:10,1200.00
