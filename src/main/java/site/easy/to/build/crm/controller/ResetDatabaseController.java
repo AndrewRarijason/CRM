@@ -2,7 +2,7 @@ package site.easy.to.build.crm.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import site.easy.to.build.crm.service.reset.ConfigurationBaseService;
+import site.easy.to.build.crm.service.evaluation.ConfigurationBaseService;
 
 
 @Controller
