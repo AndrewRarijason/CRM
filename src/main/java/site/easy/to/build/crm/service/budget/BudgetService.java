@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Service
 public class BudgetService {
-    
+
     private final BudgetRepository budgetRepository;
     private final DepenseService depenseService;
     private final SeuilService seuilService;
@@ -56,19 +56,19 @@ public class BudgetService {
     public double getTotalBudgetByCustomerId(int customerId) {
         return budgetRepository.getTotalBudgetByCustomerId(customerId);
     }
-    
-   public Notification checkBudget(int customerId,double newDepense){
+
+    public Notification checkBudget(int customerId,double newDepense){
         double totalDepense = depenseService.getTotalDepenseByCustomerId(customerId)+newDepense;
         System.out.println("total depense"+totalDepense);
         double seuil = seuilService.getSeuilActuel().getTaux().doubleValue();
         double budget = getTotalBudgetByCustomerId(customerId);
-        
+
         double seuilBudget = budget * (seuil/100);
         LocalDateTime date= LocalDateTime.now();
         Customer cust= customerService.findByCustomerId(customerId);
         if( totalDepense > seuilBudget){
             return  new Notification("Le seuil du budget est dépassé",date,0,cust);
-             
+
         }else if (totalDepense > budget){
             return new Notification("Le budget est dépassé",date,0,cust);
         }else if (totalDepense==seuilBudget) {
@@ -76,8 +76,8 @@ public class BudgetService {
 
         }else{
             return new Notification("successful", date, 1, cust);
-        } 
-}
+        }
+    }
 
 }
 
