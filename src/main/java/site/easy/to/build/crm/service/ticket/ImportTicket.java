@@ -25,10 +25,10 @@ public class ImportTicket {
 
 
     public List<TicketDepense> importTicket(MultipartFile file,char separator,DepenseService depenseService,
-                                            TicketService ticketService,UserService userService,CustomerService customerService) throws Exception {
+    TicketService ticketService,UserService userService,CustomerService customerService) throws Exception {
 
         List<TicketDepense> ticketDepenseList = new ArrayList<>();
-
+        
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              @SuppressWarnings("deprecation")
@@ -40,7 +40,7 @@ public class ImportTicket {
                 // T instance = clazz.getDeclaredConstructor().newInstance();
 
                 Ticket ticket = new Ticket();
-
+                
                 String subject = csvRecord.get("subject").trim();
                 ticket.setSubject(subject);
                 String  description= csvRecord.get("description").trim();
@@ -55,7 +55,7 @@ public class ImportTicket {
                 ticket.setManager(managerUser);
                 if (managerUser==null){
                     throw new Exception("Manager not found");
-
+                    
                 }
 
 
@@ -65,7 +65,7 @@ public class ImportTicket {
                 ticket.setEmployee(employeeUser);
                 if (employeeUser==null){
                     throw new Exception("Employee not found");
-
+                    
                 }
 
                 String customer = csvRecord.get("customer").trim();
@@ -74,7 +74,7 @@ public class ImportTicket {
                 ticket.setCustomer(customerUser);
                 if (customerUser==null){
                     throw new Exception("Customer not found");
-
+                    
                 }
 
                 System.out.println("tonga PARSE DATE");
@@ -90,12 +90,12 @@ public class ImportTicket {
                 double depenseValue = Double.parseDouble(depense);
                 depenseObj.setValeurDepense(depenseValue);
 
-
+                
                 depenseObj.setDateDepense(createdAtDate);
                 depenseObj.setEtat(1);
 
                 depenseObj.setTicket(ticket);
-
+                
 
                 TicketDepense ticketDepense = new TicketDepense(ticket, depenseObj);
                 ticketDepenseList.add(ticketDepense);
@@ -115,7 +115,7 @@ public class ImportTicket {
             Depense depense = ticketDepense.getDepense();
             Ticket saveTicket=ticketService.save(ticket);
             ticketDepense.getDepense().setTicket(saveTicket);
-            ticketDepense.setTicket(saveTicket);
+            ticketDepense.setTicket(saveTicket); 
             Depense depense2=depenseService.saveDepense(depense);
             ticketDepense.setDepense(depense2);
         }

@@ -16,12 +16,12 @@ public class ResetDatabaseController {
     @RequestMapping("/resetDatabase")
     public String resetDatabase() {
         configurationBaseService.truncateAllTables();
-        return "redirect:/login";
+        return "redirect:/resetPage";
     }
 
     @RequestMapping("/resetPage")
     public String resetPage() {
-        return "reset/reset-database";
+        return "eval/reset-database";
     }
 
 

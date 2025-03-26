@@ -40,8 +40,8 @@ public class SecurityConfig {
 
         @Autowired
         public SecurityConfig(OAuthLoginSuccessHandler oAuth2LoginSuccessHandler,
-                              CustomOAuth2UserService oauthUserService, CrmUserDetails crmUserDetails,
-                              CustomerUserDetails customerUserDetails, Environment environment) {
+                        CustomOAuth2UserService oauthUserService, CrmUserDetails crmUserDetails,
+                        CustomerUserDetails customerUserDetails, Environment environment) {
                 this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
                 this.oauthUserService = oauthUserService;
                 this.crmUserDetails = crmUserDetails;
@@ -53,7 +53,7 @@ public class SecurityConfig {
         @Order(2)
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-
+                
 
 
                 http.authorizeHttpRequests((authorize) -> authorize
@@ -72,26 +72,26 @@ public class SecurityConfig {
                                 .requestMatchers("/employee/ticket/**").hasAnyRole("MANAGER", "EMPLOYEE")
                                 .requestMatchers("/customer/**").hasRole("CUSTOMER")
                                 .anyRequest().authenticated())
-                        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
-                        .formLogin((form) -> form
-                                .loginPage("/login")
-                                .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/", true)
-                                .failureUrl("/login")
-                                .permitAll())
-                        .userDetailsService(crmUserDetails)
-                        .oauth2Login(oauth2 -> oauth2
-                                .loginPage("/login")
-                                .userInfoEndpoint(userInfo -> userInfo
-                                        .userService(oauthUserService))
-                                .successHandler(oAuth2LoginSuccessHandler))
-                        .logout((logout) -> logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login")
-                                .permitAll())
-                        .exceptionHandling(exception -> {
-                                exception.accessDeniedHandler(accessDeniedHandler());
-                        });
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                                .formLogin((form) -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .defaultSuccessUrl("/", true)
+                                                .failureUrl("/login")
+                                                .permitAll())
+                                .userDetailsService(crmUserDetails)
+                                .oauth2Login(oauth2 -> oauth2
+                                                .loginPage("/login")
+                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                .userService(oauthUserService))
+                                                .successHandler(oAuth2LoginSuccessHandler))
+                                .logout((logout) -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/login")
+                                                .permitAll())
+                                .exceptionHandling(exception -> {
+                                        exception.accessDeniedHandler(accessDeniedHandler());
+                                });
 
                 return http.build();
         }
@@ -105,7 +105,7 @@ public class SecurityConfig {
         @Order(1)
         public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
 
-
+                                
 
                 http.securityMatcher("/customer-login/**").authorizeHttpRequests((authorize) -> authorize
                                 .requestMatchers("/set-password/**").permitAll()
@@ -117,18 +117,18 @@ public class SecurityConfig {
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers(AntPathRequestMatcher.antMatcher("/**/manager/**")).hasRole("MANAGER")
                                 .anyRequest().authenticated())
-                        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
-                        .formLogin((form) -> form
-                                .loginPage("/customer-login")
-                                .loginProcessingUrl("/customer-login")
-                                .failureUrl("/customer-login")
-                                .defaultSuccessUrl("/", true)
-                                .permitAll())
-                        .userDetailsService(customerUserDetails)
-                        .logout((logout) -> logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/customer-login")
-                                .permitAll());
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                                .formLogin((form) -> form
+                                                .loginPage("/customer-login")
+                                                .loginProcessingUrl("/customer-login")
+                                                .failureUrl("/customer-login")
+                                                .defaultSuccessUrl("/", true)
+                                                .permitAll())
+                                .userDetailsService(customerUserDetails)
+                                .logout((logout) -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/customer-login")
+                                                .permitAll());
 
                 return http.build();
         }
@@ -137,5 +137,5 @@ public class SecurityConfig {
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();
         }
-
+        
 }

@@ -24,5 +24,5 @@ public class TicketDepense {
     public void setDepense(Depense depense) {
         this.depense = depense;
     }
-
+    
 }

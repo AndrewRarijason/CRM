@@ -77,6 +77,10 @@
                                 <div class="input-group">
                                     <input type="text" id="name" th:field="*{name}" class="form-control">
                                 </div>
+                                <label class="m-t-20" for="depense">Depense:</label>
+                                <div class="input-group">
+                                    <input type="number" id="depense" name="depense" class="form-control">
+                                </div>
                                 <div class="input-group">
                                     <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                                 </div>
@@ -116,10 +120,7 @@
                                         <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
                                     </select>
                                 </div>
-                                <label class="m-t-20" for="depense">Depense:</label>
-                                <div class="input-group">
-                                    <input type="text" id="depense" name="depense" class="form-control">
-                                </div>
+                                
                                 <label class="m-t-20"><i class="ti-link"></i> Attachment</label>
                                 <div class="form-group">
                                     <div class="dropzone" id="my-dropzone"></div>

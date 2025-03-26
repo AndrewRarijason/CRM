@@ -20,8 +20,8 @@ public class ConfigurationBaseService {
 
         // Récupérer uniquement les tables (exclure les vues)
         List<String> tables = jdbcTemplate.queryForList(
-                "SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE'",
-                String.class
+            "SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE'", 
+            String.class
         );
 
         // Liste des tables à ne pas supprimer

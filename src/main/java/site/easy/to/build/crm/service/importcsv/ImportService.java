@@ -35,16 +35,16 @@ import site.easy.to.build.crm.util.EmailTokenUtils;
 
 @Service
 public class ImportService {
-
+    
     // @Transactional
     public void importCsv(MultipartFile file,CustomerService customerService,char separator,
-                          PasswordEncoder passwordEncoder,CustomerLoginInfoService customerLoginInfoService,
-                          UserService userService)
-            throws Exception {
+    PasswordEncoder passwordEncoder,CustomerLoginInfoService customerLoginInfoService,
+    UserService userService) 
+    throws Exception {
         List<Customer> customers = new ArrayList<>();
         // List<CustomerLoginInfo> customerLoginInfos = new ArrayList<>();
-
-        int line=2;
+        
+        int line=2;            
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              @SuppressWarnings("deprecation")
@@ -59,6 +59,7 @@ public class ImportService {
                     String nomCustomer=csvRecord.get("customer_name").trim();
                     if (nomCustomer==null||nomCustomer.isEmpty()) {
                         throw new Exception("Nom du client manquant ");
+                        
                     }
                     customer.setName(nomCustomer);
                     String emailCustomer=csvRecord.get("customer_email").trim();
@@ -75,9 +76,9 @@ public class ImportService {
                     customerLoginInfo.setPassword(passwordEncoder.encode("123"));
 
                     CustomerLoginInfo customerLoginInfo2=customerLoginInfoService.save(customerLoginInfo);
-
+                    
                     customer.setCustomerLoginInfo(customerLoginInfo2);
-
+                    
                     customer.setPosition("imported");
                     customer.setPhone("0000000000");
                     customer.setAddress("imported");
@@ -96,10 +97,10 @@ public class ImportService {
                     customers.add(customer2);
 
                     line ++;
-
+                
                 } else {
                     throw new Exception("Invalid CSV file");
-
+                    
                 }
             }
 
@@ -110,19 +111,19 @@ public class ImportService {
         }
     }
 
-
+    
     // @Transactional
     public void readOthercsv(MultipartFile file,CustomerRequestImportService requestImportService,char separator,
-                             CustomerService customerService,UserService userService,TicketService ticketService,LeadService leadService,
-                             DepenseService depenseService)
-            throws Exception{
+    CustomerService customerService,UserService userService,TicketService ticketService,LeadService leadService,
+    DepenseService depenseService)
+    throws Exception{
 
         List<User> users=userService.findByRoles_Name("ROLE_MANAGER");
         List<User> users2=userService.findByRoles_Name("ROLE_EMPLOYEE");
         users2.addAll(users);
-
-
-        int line=2;
+        
+        
+        int line=2;            
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              @SuppressWarnings("deprecation")
@@ -130,7 +131,7 @@ public class ImportService {
                      .withFirstRecordAsHeader()
                      .withDelimiter(separator))) {  // Spécifiez le séparateur ici
 
-
+            
             for (CSVRecord csvRecord : csvParser) {
                 System.out.println(csvRecord.size());
                 if (csvRecord.size()==5) {
@@ -144,7 +145,7 @@ public class ImportService {
                     String subject=csvRecord.get("subject_or_name").trim();
                     String type=csvRecord.get("type").trim();
                     String status=csvRecord.get("status").trim();
-
+                    
                     String expense=csvRecord.get("expense").trim();
 
                     Customer customer=customerService.findByEmail(mail);
@@ -161,22 +162,30 @@ public class ImportService {
 
                         Lead lead2=leadService.save(lead);
 
-
-                        try {
+                        
+                         try {
                             expense = expense.replace(',', '.');
+
                             Double expensed=Double.parseDouble(expense);
+                            if (expensed<=0) {
+                                throw new Exception("valeur negative");
+                            }
+
+
                             Depense depense=new Depense();
+
+
                             depense.setLead(lead2);
                             depense.setValeurDepense(expensed);
                             depense.setDateDepense(LocalDateTime.now());
                             depense.setEtat(1);
 
                             Depense depense2=depenseService.saveDepense(depense);
-
+                            
 
 
                         } catch (Exception e) {
-                            throw new Exception("Invalid expense value");
+                            throw new Exception("Invalid expense value"+e.getMessage());
 
                         }
                     }
@@ -190,14 +199,21 @@ public class ImportService {
                         ticket.setEmployee(users2.get(randomNumber2));
                         ticket.setPriority("low");
 
-
+                        
                         Ticket ticket2= ticketService.save(ticket);
 
-                        try {
-
+                         try {
+                        
 
                             expense = expense.replace(',', '.');
                             Double expensedo=Double.parseDouble(expense);
+
+                            
+                            if (expensedo<=0) {
+                                throw new Exception("valeur negative");
+                            }
+
+
                             Depense depense=new Depense();
                             depense.setTicket(ticket2);
                             depense.setValeurDepense(expensedo);
@@ -215,8 +231,8 @@ public class ImportService {
                     }
 
                     line++;
-
-
+                
+                
                 }else{
                     throw new Exception("Invalid CSV file ++"+csvRecord.size());
                 }
@@ -233,12 +249,12 @@ public class ImportService {
 
     // @Transactional
     public void readBudgetcsv(MultipartFile file,BudgetService budgetService,char separator,
-                              CustomerService customerService)
-            throws Exception{
+    CustomerService customerService)
+    throws Exception{
 
-
-
-        int line=2;
+        
+        
+        int line=2;            
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              @SuppressWarnings("deprecation")
@@ -246,7 +262,7 @@ public class ImportService {
                      .withFirstRecordAsHeader()
                      .withDelimiter(separator))) {  // Spécifiez le séparateur ici
 
-
+            
             for (CSVRecord csvRecord : csvParser) {
                 System.out.println(csvRecord.size());
                 if (csvRecord.size()==2) {
@@ -259,6 +275,11 @@ public class ImportService {
                     try {
                         budgetValue = budgetValue.replace(',', '.');
                         budget.setValeur(Double.parseDouble(budgetValue));
+
+                        if (Double.parseDouble(budgetValue)<=0) {
+                            throw new Exception("valeur negative");
+                        }
+
                         budget.setCustomer(customer);
                         budget.setDate(LocalDateTime.now());
                         budgetService.save(budget);
@@ -266,7 +287,7 @@ public class ImportService {
                     } catch (Exception e) {
                         throw new Exception("Invalid budget value");
                     }
-
+                    
                 }else{
                     throw new Exception("Invalid CSV file ++"+csvRecord.size());
                 }
@@ -283,16 +304,16 @@ public class ImportService {
 
     @Transactional(rollbackOn = Exception.class)
     public void ImportMitambatra(MultipartFile file,MultipartFile file2,MultipartFile file3,CustomerService customerService,char separator,
-                                 PasswordEncoder passwordEncoder,CustomerLoginInfoService customerLoginInfoService,
-                                 UserService userService,CustomerRequestImportService requestImportService,TicketService ticketService
-            ,LeadService leadService,DepenseService depenseService,BudgetService budgetService) throws Exception{
+    PasswordEncoder passwordEncoder,CustomerLoginInfoService customerLoginInfoService,
+    UserService userService,CustomerRequestImportService requestImportService,TicketService ticketService
+    ,LeadService leadService,DepenseService depenseService,BudgetService budgetService) throws Exception{
         int filenb=1;
         try {
             importCsv(file, customerService, separator, passwordEncoder, customerLoginInfoService, userService);
             filenb++;
             readBudgetcsv(file2, budgetService , separator, customerService);
-            readOthercsv(file3, requestImportService, separator, customerService,
-                    userService, ticketService, leadService, depenseService);
+            readOthercsv(file3, requestImportService, separator, customerService, 
+            userService, ticketService, leadService, depenseService);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e+"sur le ficker"+filenb);
@@ -300,7 +321,7 @@ public class ImportService {
     }
 
 
-
+    
 
 
 }

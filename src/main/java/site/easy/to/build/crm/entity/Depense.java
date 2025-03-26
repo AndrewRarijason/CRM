@@ -1,13 +1,9 @@
 package site.easy.to.build.crm.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+
 import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "depense")
@@ -16,14 +12,17 @@ public class Depense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer depenseId;
 
+    
+    @DecimalMin(value = "0.01", inclusive = true, message = "La valeur de la dépense doit être supérieure à 0.00")
     @Column(name = "valeur_depense", nullable = false, precision = 10, scale = 2)
     private double valeurDepense;
 
     @Column(name = "date_depense", nullable = false)
     private LocalDateTime dateDepense;
 
+
     @Column(name = "etat", nullable = false)
-    private int etat;
+    private Integer etat;
 
     @ManyToOne
     @JoinColumn(name = "lead_id")
@@ -33,29 +32,16 @@ public class Depense {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    public Depense() {
-       
-    }
-    // Getters and Setters
-
-    public void setDateDepense(LocalDateTime dateDepense) {
-        this.dateDepense = dateDepense;
+    public Integer getDepenseId() {
+        return depenseId;
     }
 
     public void setDepenseId(Integer depenseId) {
         this.depenseId = depenseId;
     }
 
-    public void setEtat(int etat) {
-        this.etat = etat;
-    }
-
-    public void setLead(Lead lead) {
-        this.lead = lead;
-    }
-
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
+    public double getValeurDepense() {
+        return valeurDepense;
     }
 
     public void setValeurDepense(double valeurDepense) {
@@ -66,23 +52,33 @@ public class Depense {
         return dateDepense;
     }
 
-    public Integer getDepenseId() {
-        return depenseId;
+    public void setDateDepense(LocalDateTime dateDepense) {
+        this.dateDepense = dateDepense;
     }
 
-    public int getEtat() {
+    public Integer getEtat() {
         return etat;
+    }
+
+    public void setEtat(Integer etat) {
+        this.etat = etat;
     }
 
     public Lead getLead() {
         return lead;
     }
+
+    public void setLead(Lead lead) {
+        this.lead = lead;
+    }
+
     public Ticket getTicket() {
         return ticket;
     }
-    public double getValeurDepense() {
-        return valeurDepense;
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
 
-    
+    // Getters and Setters
 }

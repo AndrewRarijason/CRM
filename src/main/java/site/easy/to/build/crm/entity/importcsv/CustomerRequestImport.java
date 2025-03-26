@@ -32,10 +32,10 @@ public class CustomerRequestImport {
     @Column(name = "status", nullable = false)
     @NotBlank(message = "Status is required")
     @Pattern(
-            regexp = "^(meeting-to-schedule|scheduled|archived|success|assign-to-sales|" +
-                    "open|assigned|on-hold|in-progress|resolved|closed|reopened|" +
-                    "pending-customer-response|escalated|archived)$",
-            message = "Invalid status"
+        regexp = "^(meeting-to-schedule|scheduled|archived|success|assign-to-sales|" +
+                "open|assigned|on-hold|in-progress|resolved|closed|reopened|" +
+                "pending-customer-response|escalated|archived)$",
+        message = "Invalid status"
     )
     private String status;
 

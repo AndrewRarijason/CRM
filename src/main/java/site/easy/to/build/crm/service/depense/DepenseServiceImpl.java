@@ -60,4 +60,17 @@ public class DepenseServiceImpl implements DepenseService {
     //     depenseRepository.save(depense);
         
     // }
+
+
+    @Override
+    public Depense updateDepense(Integer id, Depense updatedDepense) {
+        return depenseRepository.findById(id).map(depense -> {
+            depense.setValeurDepense(updatedDepense.getValeurDepense());
+            depense.setDateDepense(updatedDepense.getDateDepense());
+            depense.setLead(updatedDepense.getLead());
+            depense.setTicket(updatedDepense.getTicket());
+            depense.setEtat(updatedDepense.getEtat());
+            return depenseRepository.save(depense);
+        }).orElse(null);
+    }
 }
