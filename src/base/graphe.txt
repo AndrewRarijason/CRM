@@ -1,0 +1,31 @@
+1. Dépenses par client (Vue: vue_statistique_depense)
+Graphique adapté : Diagramme à barres empilées 📊
+
+Axes :
+
+Axe X : Nom des clients (customer_name)
+
+Axe Y : Montant des dépenses
+
+Deux couleurs pour distinguer :
+
+Dépenses liées aux leads
+
+Dépenses liées aux tickets
+
+📈 2. Budget vs. Dépenses par client (Vue: vue_statistique_budget)
+Graphique adapté : Diagramme en barres groupées
+
+Axes :
+
+Axe X : Nom des clients (customer_name)
+
+Axe Y : Montant en argent
+
+Trois barres par client :
+
+🔵 Budget total
+
+🔴 Total des dépenses
+
+🟢 Budget restant
