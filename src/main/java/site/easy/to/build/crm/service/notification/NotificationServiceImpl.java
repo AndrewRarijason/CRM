@@ -47,7 +47,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getRecentNotifications(int customerId) {
-        return notificationRepository.findByCustomerCustomerIdAndEtatOrderByDateNotificationDesc(customerId, 0);
+        List<Notification> notifications=notificationRepository.findByCustomerCustomerIdAndEtatOrderByDateNotificationDesc(customerId, 0);
+        List<Notification> notifications1=notificationRepository.findByCustomerCustomerIdAndEtatOrderByDateNotificationDesc(customerId, -1);
+        notifications.addAll(notifications1);
+        return notifications;
     }
 
     @Override

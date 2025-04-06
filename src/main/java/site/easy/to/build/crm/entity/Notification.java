@@ -29,6 +29,9 @@ public class Notification {
     @JsonIgnoreProperties("notifications")
     private Customer customer;
 
+    @Column(name="id_depense")
+    int idDepense;
+
     public Notification() {
     }
 
@@ -37,6 +40,15 @@ public class Notification {
         this.dateNotification = dateNotification;
         this.etat = etat;
         this.customer = customer;
+    }
+
+    public Notification(Integer notificationId, String message, LocalDateTime dateNotification, Integer etat, Customer customer, int idDepense) {
+        this.notificationId = notificationId;
+        this.message = message;
+        this.dateNotification = dateNotification;
+        this.etat = etat;
+        this.customer = customer;
+        this.idDepense = idDepense;
     }
 
     public Integer getNotificationId() {
@@ -77,5 +89,13 @@ public class Notification {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public int getIdDepense() {
+        return idDepense;
+    }
+
+    public void setIdDepense(int idDepense) {
+        this.idDepense = idDepense;
     }
 }

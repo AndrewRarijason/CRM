@@ -50,9 +50,11 @@ public class BudgetService {
     public void delete(int id){
         budgetRepository.deleteById(id);
     }
+    
     public List<Budget> findByCustomerId(int customerId){
         return budgetRepository.findByCustomerCustomerId(customerId);
     }
+
     public double getTotalBudgetByCustomerId(int customerId) {
         return budgetRepository.getTotalBudgetByCustomerId(customerId);
     }
@@ -72,7 +74,7 @@ public class BudgetService {
         }else if (totalDepense > budget){
             return new Notification("Le budget est dépassé",date,0,cust);
         }else if (totalDepense==seuilBudget) {
-            return new Notification("le sueil du budget est atteint",date,1,cust);
+            return new Notification("le sueil du budget est atteint",date,-1,cust);
 
         }else{
             return new Notification("successful", date, 1, cust);

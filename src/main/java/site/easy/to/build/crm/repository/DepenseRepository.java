@@ -19,6 +19,6 @@ public interface DepenseRepository extends JpaRepository<Depense, Integer> {
        "LEFT JOIN d.ticket t " +
        "LEFT JOIN l.customer c " +
        "LEFT JOIN t.customer c2 " +
-       "WHERE c.customerId = :customerId OR c2.customerId = :customerId")    
+       "WHERE (c.customerId = :customerId OR c2.customerId = :customerId) AND d.etat=1")    
     public double getTotalDepenseByCustomerId(@Param("customerId") int customerId);
 }

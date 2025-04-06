@@ -22,7 +22,11 @@ public class StatistiqueBudget {
     @Column(name = "budget_restant")
     private Double budgetRestant;
 
-    // Getters and Setters
+    @Column(name = "total_depense_ticket")
+    private Double totalDepenseTicket;
+
+    @Column(name = "total_depense_lead")
+    private Double totalDepenseLead;
 
     public Long getCustomerId() {
         return customerId;
@@ -63,4 +67,22 @@ public class StatistiqueBudget {
     public void setBudgetRestant(Double budgetRestant) {
         this.budgetRestant = budgetRestant;
     }
+
+    public Double getTotalDepenseTicket() {
+        return totalDepenseTicket;
+    }
+
+    public void setTotalDepenseTicket(Double totalDepenseTicket) {
+        this.totalDepenseTicket = totalDepenseTicket;
+    }
+
+    public Double getTotalDepenseLead() {
+        return totalDepenseLead;
+    }
+
+    public void setTotalDepenseLead(Double totalDepenseLead) {
+        this.totalDepenseLead = totalDepenseLead;
+    }
+
+
 }

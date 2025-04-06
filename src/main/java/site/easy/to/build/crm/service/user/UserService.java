@@ -22,4 +22,7 @@ public interface UserService {
 
     public List<User> findAll();
 
+    public List<User> findByRoles_Name(String role);
+    
+
 }

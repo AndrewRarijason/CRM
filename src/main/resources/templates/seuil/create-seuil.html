@@ -74,7 +74,7 @@
                             <form th:object="${seuil}" th:action="@{/employee/seuils/add}" id="email-form" method="post">
                                 <label class="m-t-20" for="taux">taux:</label>
                                 <div class="input-group">
-                                    <input type="text" id="taux" th:field="*{taux}" class="form-control">
+                                    <input type="number" required id="taux" th:field="*{taux}" class="form-control">
                                 </div>
                                 <div class="input-group">
                                     <span class="text-danger font-weight-bold" th:if="${#fields.hasErrors('taux')}" th:errors="*{taux}"></span>

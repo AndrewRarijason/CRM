@@ -32,13 +32,15 @@ public class LoginService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean checkLogin(String username, String password) throws UsernameNotFoundException {
+    public User checkLogin(String username, String password) throws UsernameNotFoundException {
         List<User> users = userRepository.findByUsername(username);
         if (!users.isEmpty()) {
             User user = users.get(0);
-            return passwordEncoder.matches(password, user.getPassword()); // Utiliser matches()
+            if(passwordEncoder.matches(password, user.getPassword())){
+                return user;
+            } // Utiliser matches()
         }
-        return false;
+        return null;
     }
     
 }

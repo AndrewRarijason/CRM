@@ -1,22 +1,30 @@
 package site.easy.to.build.crm.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "budget")
 public class Budget {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "budget_id")
     private int id;
+    
+    @DecimalMin(value = "0.00", inclusive = true, message = "La valeur doit être supérieure ou égale à 0.00")
     @Column(name = "valeur")
     private double valeur;
+    
+    
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @NotNull(message = "date de changement requis")
     @Column(name = "date_budget")
     private LocalDateTime date;
 

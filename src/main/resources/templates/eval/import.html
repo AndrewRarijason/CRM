@@ -78,38 +78,26 @@
                                 </div>
     
                                 <!-- Formulaire d'importation -->
-                                <form th:action="@{/import/importTicketDepense}" method="post" enctype="multipart/form-data">
+                                <form th:action="@{/import/importCustomer}" method="post" enctype="multipart/form-data">
                                     <div class="form-group">
-                                        <label for="file">Sélectionner un fichier CSV :</label>
-                                        <input type="file" id="file" name="file" class="form-control" required>
+                                        <label for="file">Sélectionner un fichier CSV Customer:</label>
+                                        <input type="file" id="file1" name="file1" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="file">Sélectionner un fichier CSV Budget :</label>
+                                        <input type="file" id="file2" name="file2" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="file">Sélectionner un fichier CSV Depense:</label>
+                                        <input type="file" id="file3" name="file3" class="form-control" required>
                                     </div>
                                     <button type="submit" class="btn btn-success">Importer</button>
                                 </form>
     
                                 <hr>
     
-                                <h5 th:if="${errorMessage != null}" th:text="${errorMessage}"></h5>
-                                
-                                <!-- Affichage des tickets importés -->
-                                <h5 th:if="${ticketDepense != null and !ticketDepense.isEmpty()}">Résultats de l'import :</h5>
-                                <table th:if="${ticketDepense != null and !ticketDepense.isEmpty()}" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Description</th>
-                                            <th>Montant</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="ticketdep : ${ticketDepense}">
-                                            <td th:text="${ticketdep.ticket.subject}"></td>
-                                            <td th:text="${ticketdep.ticket.description}"></td>
-                                            <td th:text="${ticketdep.depense.valeurDepense}"></td>
-                                            <td th:text="${ticketdep.ticket.createdAt}"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <h5 th:if="${message != null}" th:text="${message}"></h5>
+                            
     
                             </div>
                         </div>

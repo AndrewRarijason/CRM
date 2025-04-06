@@ -2,7 +2,7 @@ package site.easy.to.build.crm.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import site.easy.to.build.crm.service.reset.ConfigurationBaseService;
+import site.easy.to.build.crm.service.evaluation.ConfigurationBaseService;
 
 
 @Controller
@@ -16,12 +16,12 @@ public class ResetDatabaseController {
     @RequestMapping("/resetDatabase")
     public String resetDatabase() {
         configurationBaseService.truncateAllTables();
-        return "redirect:/login";
+        return "redirect:/resetPage";
     }
 
     @RequestMapping("/resetPage")
     public String resetPage() {
-        return "reset/reset-database";
+        return "eval/reset-database";
     }
 
 

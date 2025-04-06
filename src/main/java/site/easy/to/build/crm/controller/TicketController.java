@@ -176,36 +176,26 @@ public class TicketController {
         ticket.setManager(manager);
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
-        Notification notif= budgetService.checkBudget(customerId,depense); 
+        Notification notif= budgetService.checkBudget(customerId,depense);
         Depense depenseToInsert= new Depense();
         depenseToInsert.setDateDepense(notif.getDateNotification());
-        depenseToInsert.setEtat(notif.getEtat());
+        // depenseToInsert.setEtat(notif.getEtat());
+        if (notif.getEtat()==0) {
+            depenseToInsert.setEtat(0);
+        }
+        else{
+            depenseToInsert.setEtat(1);
+        }
         depenseToInsert.setTicket(ticket);
-        depenseToInsert.setValeurDepense(depense);    
+        depenseToInsert.setValeurDepense(depense);
         ticketService.save(ticket);
-        depenseService.saveDepense(depenseToInsert);
-        // if (depenseToInsert.getEtat()==0) {
-        //     List<User> employees = new ArrayList<>();
-        //     List<Customer> customers;
+        Depense depense1= depenseService.saveDepense(depenseToInsert);
+       
+        // notif.setEtat(0);
 
-        //     if(AuthorizationUtil.hasRole(authentication, "ROLE_MANAGER")) {
-        //         employees = userService.findAll();
-        //         customers = customerService.findAll();
-        //     } else {
-        //         employees.add(manager);
-        //         customers = customerService.findByUserId(manager.getId());
-        //     }
-
-        //     model.addAttribute("employees",employees);
-        //     model.addAttribute("customers",customers);
-        //     model.addAttribute("notification", notif);
-        //     model.addAttribute("ticket", ticket);
-        //     return "ticket/create-ticket";
-            
-        // }
-        notif.setEtat(0);
+        notif.setIdDepense(depense1.getDepenseId());
         if (!notif.getMessage().equals("successful")){
-            notificationService.save(notif);    
+            notificationService.save(notif);
         }
         return "redirect:/employee/ticket/assigned-tickets";
     }
@@ -325,7 +315,7 @@ public class TicketController {
         List<String> properties = DatabaseUtil.getColumnNames(entityManager, Ticket.class);
         Map<String, Pair<String,String>> changes = LogEntityChanges.trackChanges(originalTicket,currentTicket,properties);
         boolean isGoogleUser = !(authentication instanceof UsernamePasswordAuthenticationToken);
-          
+
         if(isGoogleUser && googleGmailApiService != null) {
             OAuthUser oAuthUser = authenticationUtils.getOAuthUserFromAuthentication(authentication);
             if(oAuthUser.getGrantedScopes().contains(GoogleAccessService.SCOPE_GMAIL)) {
