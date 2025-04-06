@@ -92,6 +92,7 @@
                                             <th>Country</th>
                                             <th>Show Full Details</th>
                                             <th th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">Delete</th>
+                                            <th th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">Exporter</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -106,6 +107,13 @@
                                                 <form th:action="${home + 'employee/customer/delete-customer/' + customer.customerId}" method="post">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="mdi mdi-delete"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                                <form th:action="${home + 'employee/customer/export-customer/' + customer.customerId}" method="get">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="mdi mdi-check-circle"></i>
                                                     </button>
                                                 </form>
                                             </td>

@@ -25,5 +25,5 @@ public class LoginRestController {
     @PostMapping
     public boolean login(@RequestParam("username") String username,@RequestParam("password") String password) {
         return loginService.checkLogin(username,password);
-    }
+    }+
 }

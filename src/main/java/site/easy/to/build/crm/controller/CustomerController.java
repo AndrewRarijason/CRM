@@ -1,7 +1,14 @@
 package site.easy.to.build.crm.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -9,14 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
 import site.easy.to.build.crm.entity.OAuthUser;
 import site.easy.to.build.crm.entity.User;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.CsvGeneratorUtil;
 import site.easy.to.build.crm.service.contract.ContractService;
 import site.easy.to.build.crm.service.customer.CustomerLoginInfoService;
 import site.easy.to.build.crm.service.customer.CustomerService;
@@ -26,9 +40,6 @@ import site.easy.to.build.crm.service.user.UserService;
 import site.easy.to.build.crm.util.AuthenticationUtils;
 import site.easy.to.build.crm.util.AuthorizationUtil;
 import site.easy.to.build.crm.util.EmailTokenUtils;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Controller
 @RequestMapping("/employee/customer")
@@ -45,6 +56,10 @@ public class CustomerController {
     private final LeadService leadService;
 
     @Autowired
+    private CsvGeneratorUtil csvGeneratorUtil;
+
+
+    @Autowired
     public CustomerController(CustomerService customerService, UserService userService, CustomerLoginInfoService customerLoginInfoService,
                               AuthenticationUtils authenticationUtils, GoogleGmailApiService googleGmailApiService, Environment environment,
                               TicketService ticketService, ContractService contractService, LeadService leadService) {
@@ -58,6 +73,58 @@ public class CustomerController {
         this.contractService = contractService;
         this.leadService = leadService;
     }
+
+    @GetMapping("/export-customer/{id}")
+    public ResponseEntity<byte[]> generateCsvFile(@ModelAttribute("customer") Customer tempCustomer, BindingResult bindingResult ,@PathVariable("id") int id,
+    Authentication authentication, RedirectAttributes redirectAttributes){
+        Customer customer = customerService.findByCustomerId(id);
+        int userId = authenticationUtils.getLoggedInUserId(authentication);
+        User user = userService.findById(userId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "customer.csv");
+
+        byte[] csvBytes = csvGeneratorUtil.generateCustomerCsv(customer).getBytes();
+
+        return new ResponseEntity<>(csvBytes, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/delete-customer/{id}")
+    @Transactional
+    public String deleteCustomer(@ModelAttribute("customer") Customer tempCustomer, BindingResult bindingResult ,@PathVariable("id") int id,
+                                 Authentication authentication, RedirectAttributes redirectAttributes) {
+        Customer customer;
+        int userId = authenticationUtils.getLoggedInUserId(authentication);
+        User user = userService.findById(userId);
+        if(user.isInactiveUser()) {
+            return "error/account-inactive";
+        }
+        try {
+            if(!AuthorizationUtil.hasRole(authentication,"ROLE_MANAGER")) {
+                bindingResult.rejectValue("failedErrorMessage", "error.failedErrorMessage",
+                        "Sorry, you are not authorized to delete this customer. Only administrators have permission to delete customers.");
+                redirectAttributes.addFlashAttribute("bindingResult", bindingResult);
+                return "redirect:/employee/customer/my-customers";
+            }
+
+            customer = customerService.findByCustomerId(id);
+            CustomerLoginInfo customerLoginInfo = customer.getCustomerLoginInfo();
+
+            contractService.deleteAllByCustomer(customer);
+            leadService.deleteAllByCustomer(customer);
+            ticketService.deleteAllByCustomer(customer);
+
+            customerLoginInfoService.delete(customerLoginInfo);
+            customerService.delete(customer);
+
+        } catch (Exception e){
+            return "error/500";
+        }
+        return "redirect:/employee/customer/my-customers";
+    }
+    
+
 
     @GetMapping("/manager/all-customers")
     public String getAllCustomers(Model model){
@@ -176,39 +243,7 @@ public class CustomerController {
     }
     
 
-    @PostMapping("/delete-customer/{id}")
-    @Transactional
-    public String deleteCustomer(@ModelAttribute("customer") Customer tempCustomer, BindingResult bindingResult ,@PathVariable("id") int id,
-                                 Authentication authentication, RedirectAttributes redirectAttributes) {
-        Customer customer;
-        int userId = authenticationUtils.getLoggedInUserId(authentication);
-        User user = userService.findById(userId);
-        if(user.isInactiveUser()) {
-            return "error/account-inactive";
-        }
-        try {
-            if(!AuthorizationUtil.hasRole(authentication,"ROLE_MANAGER")) {
-                bindingResult.rejectValue("failedErrorMessage", "error.failedErrorMessage",
-                        "Sorry, you are not authorized to delete this customer. Only administrators have permission to delete customers.");
-                redirectAttributes.addFlashAttribute("bindingResult", bindingResult);
-                return "redirect:/employee/customer/my-customers";
-            }
-
-            customer = customerService.findByCustomerId(id);
-            CustomerLoginInfo customerLoginInfo = customer.getCustomerLoginInfo();
-
-            contractService.deleteAllByCustomer(customer);
-            leadService.deleteAllByCustomer(customer);
-            ticketService.deleteAllByCustomer(customer);
-
-            customerLoginInfoService.delete(customerLoginInfo);
-            customerService.delete(customer);
-
-        } catch (Exception e){
-            return "error/500";
-        }
-        return "redirect:/employee/customer/my-customers";
-    }
+    
 
 
 }
